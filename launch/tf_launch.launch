@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="swri_transform_util" type="imu_transform_publisher" name="imu_transform_publisher" output="screen"/>
+    <!-- Aplicação mapviz -->
+    <!-- <env name="ROSCONSOLE_FORMAT" value="[${thread}] [${node}/${function}:${line}]: ${message}"/> -->
+    <node pkg="tf" type="static_transform_publisher" name="swri_transform" args="0 0 0 0 0 0 /world /map 100" />
+    <!-- <node pkg="mapviz" type="mapviz" name="$(anon mapviz)" required="true" output="log"/> -->
+    <node pkg="swri_transform_util" type="initialize_origin.py" name="initialize_origin" output="screen">
+        <param name="local_xy_frame" value="/world"/>
+        <param name="local_xy_origin" value="auto"/>
+        <!-- "auto" setting will set the origin to the first gps fix that it recieves -->
+        <remap from="gps" to="/gps/fix"/>
+    </node>
+
+     <param name = "ref_sensor" value="lms151_E" type="string"/>
+    <!--Launch the visualization-->
+    <!-- Launch the node   -->
+    <node pkg="free_space_detection" type="device_frame_publisher_node" name="device_frame_publisher" required="true" output
+    ="screen"/>
+
+
+      <node pkg="orientation_module" type="orientation_module_node" name="comunic" required="true" output="screen"/>
+
+
+    <!-- Point cloud assembler -->
+    <node type="laser_scan_assembler" pkg="laser_assembler" name="my_assembler0">
+        <remap from="scan" to="/ld_rms/scan0"/>
+        <remap from="assemble_scans2" to="assemble_scans0"/>
+        <param name="max_scans" type="int" value="150" />
+        <param name="fixed_frame" type="string" value="map" />
+    </node>
+    <node type="laser_scan_assembler" pkg="laser_assembler" name="my_assembler1">
+        <remap from="scan" to="/ld_rms/scan1"/>
+        <remap from="assemble_scans2" to="assemble_scans1"/>
+        <param name="max_scans" type="int" value="150" />
+        <param name="fixed_frame" type="string" value="map" />
+    </node>
+    <node type="laser_scan_assembler" pkg="laser_assembler" name="my_assembler2">
+        <remap from="scan" to="/ld_rms/scan2"/>
+        <remap from="assemble_scans2" to="assemble_scans2_"/>
+        <param name="max_scans" type="int" value="150" />
+        <param name="fixed_frame" type="string" value="map" />
+    </node>
+    <node type="laser_scan_assembler" pkg="laser_assembler" name="my_assembler3">
+        <remap from="scan" to="/ld_rms/scan3"/>
+        <remap from="assemble_scans2" to="assemble_scans3"/>
+        <param name="max_scans" type="int" value="150" />
+        <param name="fixed_frame" type="string" value="map" />
+    </node>
+
+
+
+
+
+  <node pkg="road_reconstruction" type="road_reconstruction" name="road_reconstruction" required="true" output="screen"/>
+
+
+
+
+</launch>
+
